@@ -15,7 +15,7 @@ int main(void) {
     Delay(1000);
 
     
-    PWM_SetDutyCycle(D9,25);
+    PWM_SetDutyCycle(D9,24);
     
     Delay(1000);
 
