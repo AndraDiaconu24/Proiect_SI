@@ -45,3 +45,9 @@ void Timer1_SetDutyCycleB(uint16_t duty) {
 void Timer1_Stop(void) {
     TCCR1B &= ~((1 << CS12) | (1 << CS11) | (1 << CS10));
 }
+
+void Timer1_InputCapture_Init(void) {
+    TCCR1A = 0;
+    TCCR1B = (1 << CS11);
+    TIMSK1 = 0;
+}

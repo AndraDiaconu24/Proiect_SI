@@ -36,4 +36,5 @@ void Timer1_SetDutyCycleB(uint16_t duty);
  */
 void Timer1_Stop(void);
 
+void Timer1_InputCapture_Init(void);
 #endif // TIMER1_H
