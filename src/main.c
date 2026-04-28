@@ -8,19 +8,13 @@
 
 
 int main(void) {
-    
-    PWM_Init(D9,50);
+    Buzzer_Init();
+
 
    while(1){
-
-    PWM_SetDutyCycle(D9,12);
-    
+    Buzzer_On();
     Delay(1000);
-
-    
-    PWM_SetDutyCycle(D9,24);
-    
+    Buzzer_Off();
     Delay(1000);
-
    }
 }
