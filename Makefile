@@ -35,7 +35,7 @@ else
 endif
 
 # Source Files
-SRC = src/main.c drivers/gpio/gpio.c drivers/interrupt/external_interrupt.c drivers/timer/timer0.c drivers/timer/timer1.c drivers/timer/timer2.c drivers/pwm/pwm.c drivers/eeprom/eeprom.c drivers/adc/adc.c utils/delay.c drivers/buzzer/buzzer.c drivers/lcd/lcd.c drivers/ultrasonic/ultrasonic.c
+SRC = src/main.c drivers/gpio/gpio.c drivers/interrupt/external_interrupt.c drivers/timer/timer0.c drivers/timer/timer1.c drivers/timer/timer2.c drivers/pwm/pwm.c drivers/eeprom/eeprom.c drivers/adc/adc.c utils/delay.c drivers/buzzer/buzzer.c drivers/lcd/lcd.c drivers/ultrasonic/ultrasonic.c drivers/i2c/i2c.c
 
 # Object Files
 # Replace .c extension with .o and prepend OBJDIR, keeping directory structure
