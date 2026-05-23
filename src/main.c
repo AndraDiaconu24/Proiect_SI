@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "drivers/gpio/gpio.h"
 #include "drivers/pwm/pwm.h"
 #include "bsp/nano.h"
@@ -20,31 +21,27 @@ int main(void) {
     LCD_SendString("TEST");
 
     while(1) {
-        // --- STAREA 1: Afișăm primul mesaj ---
-        LCD_Clear();
-        LCD_SetCursor(0, 0);
-        LCD_SendString("Sistem Activat");
+        // Citim distanta
+        uint16_t distanta = Ultrasonic_GetDistance();
         
-        LCD_SetCursor(0, 1);
-        LCD_SendString("Astept 10 sec...");
+        // Afisam pe LCD
+        char buffer[16];
+        snprintf(buffer, sizeof(buffer), "Dist: %u cm   ", distanta);
+        
+        LCD_SetCursor(0, 0);
+        LCD_SendString(buffer);
 
-        // Așteptăm 10 secunde (10 x 1000 ms)
-        for (uint8_t i = 0; i < 10; i++) {
-            _delay_ms(1000);
+        // Daca distanta este mai mica de 10 cm, pornim buzzerul
+        if (distanta > 0 && distanta < 10) {
+            Buzzer_On();
+            LCD_SetCursor(0, 1);
+            LCD_SendString("Avertizare!    ");
+        } else {
+            Buzzer_Off();
+            LCD_SetCursor(0, 1);
+            LCD_SendString("Liber          ");
         }
 
-        // --- STAREA 2: Schimbăm textul ---
-        LCD_Clear();
-        LCD_SetCursor(0, 0);
-        LCD_SendString("Update Terminat!");
-        
-        LCD_SetCursor(0, 1);
-        LCD_SendString("Totul e OK.");
-
-        // Mai așteptăm 10 secunde înainte să reluăm bucla
-        for (uint8_t i = 0; i < 10; i++) {
-            _delay_ms(1000);
-        }
-
+        _delay_ms(200); // Pauza scurta inainte de urmatoarea citire
     }
 }
