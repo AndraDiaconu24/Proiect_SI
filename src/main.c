@@ -8,14 +8,9 @@
 #include "drivers/ultrasonic/ultrasonic.h"
 #include "drivers/i2c/i2c.h"
 
-// Definim pinii pentru cele 2 LED-uri. Modificati D3 si D4 daca le-ati conectat la alti pini.
-#define LED1_PIN D3
-#define LED2_PIN D4
-
-void set_leds(gpio_state_t state) {
-    GPIO_Write(LED1_PIN, state);
-    GPIO_Write(LED2_PIN, state);
-}
+// Definim pinii pentru cele 2 LED-uri. Modificati daca le-ati conectat la alti pini.
+#define LED_RED_PIN D3
+#define LED_GREEN_PIN D4
 
 int main(void) {
     // 1. Inițializarea modulelor
@@ -23,10 +18,13 @@ int main(void) {
     Ultrasonic_Init();
     LCD_Init();
 
-    // Inițializare pini LED și aprindere continuă
-    GPIO_Init(LED1_PIN, GPIO_OUTPUT);
-    GPIO_Init(LED2_PIN, GPIO_OUTPUT);
-    set_leds(GPIO_HIGH);
+    // Inițializare pini LED
+    GPIO_Init(LED_RED_PIN, GPIO_OUTPUT);
+    GPIO_Init(LED_GREEN_PIN, GPIO_OUTPUT);
+    
+    // Stare initiala
+    GPIO_Write(LED_RED_PIN, GPIO_LOW);
+    GPIO_Write(LED_GREEN_PIN, GPIO_LOW);
 
     LCD_SetCursor(0, 0);
     LCD_SendString("Salutare!");
@@ -50,25 +48,33 @@ int main(void) {
             // De la 5 cm in jos: sunet continuu
             LCD_SetCursor(0, 1);
             LCD_SendString("STOP!!!!   ");
+            GPIO_Write(LED_GREEN_PIN, GPIO_LOW);
             Buzzer_On();
+            GPIO_Write(LED_RED_PIN, GPIO_HIGH);
             _delay_ms(200); // 200ms pauza inainte de urmatoarea citire
         } 
         else if (distanta > 5 && distanta <= 10) {
             // Intre 5 cm si 10 cm: bip rapid
             LCD_SetCursor(0, 1);
             LCD_SendString("PERICOL!!!");
+            GPIO_Write(LED_GREEN_PIN, GPIO_LOW);
             Buzzer_On();
+            GPIO_Write(LED_RED_PIN, GPIO_HIGH);
             _delay_ms(100);
             Buzzer_Off();
+            GPIO_Write(LED_RED_PIN, GPIO_LOW);
             _delay_ms(100); // Total 200ms
         } 
         else if (distanta > 10 && distanta <= 15) {
             // Intre 10 cm si 15 cm: bip rar
             LCD_SetCursor(0, 1);
             LCD_SendString("ATENTIE!  ");
+            GPIO_Write(LED_GREEN_PIN, GPIO_LOW);
             Buzzer_On();
+            GPIO_Write(LED_RED_PIN, GPIO_HIGH);
             _delay_ms(50);
             Buzzer_Off();
+            GPIO_Write(LED_RED_PIN, GPIO_LOW);
             _delay_ms(350); // Bip scurt, pauza mai lunga (total 400ms)
         } 
         else {
@@ -76,6 +82,8 @@ int main(void) {
             LCD_SetCursor(0, 1);
             LCD_SendString("Liber     ");
             Buzzer_Off();
+            GPIO_Write(LED_RED_PIN, GPIO_LOW);
+            GPIO_Write(LED_GREEN_PIN, GPIO_HIGH);
             _delay_ms(200);
         }
     }
