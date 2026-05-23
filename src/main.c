@@ -31,8 +31,8 @@ int main(void) {
         LCD_SetCursor(0, 0);
         LCD_SendString(buffer);
 
-        // Daca distanta este mai mica de 10 cm, pornim buzzerul
-        if (distanta > 0 && distanta < 10) {
+        // Daca distanta este mai mica sau egala cu 15 cm, pornim buzzerul
+        if (distanta > 0 && distanta <= 15) {
             Buzzer_On();
             LCD_SetCursor(0, 1);
             LCD_SendString("Avertizare!    ");
