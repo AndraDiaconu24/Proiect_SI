@@ -35,14 +35,14 @@ int main(void) {
         if (distanta > 0 && distanta <= 5) {
             // De la 5 cm in jos: sunet continuu
             LCD_SetCursor(0, 1);
-            LCD_SendString("");
+            LCD_SendString("STOP!!!!");
             Buzzer_On();
             _delay_ms(200); // 200ms pauza inainte de urmatoarea citire
         } 
         else if (distanta > 5 && distanta <= 10) {
             // Intre 5 cm si 10 cm: bip rapid
             LCD_SetCursor(0, 1);
-            LCD_SendString("");
+            LCD_SendString("PERICOL!!!");
             Buzzer_On();
             _delay_ms(100);
             Buzzer_Off();
@@ -51,7 +51,7 @@ int main(void) {
         else if (distanta > 10 && distanta <= 15) {
             // Intre 10 cm si 15 cm: bip rar
             LCD_SetCursor(0, 1);
-            LCD_SendString("");
+            LCD_SendString("ATENTIE!");
             Buzzer_On();
             _delay_ms(50);
             Buzzer_Off();
@@ -60,7 +60,7 @@ int main(void) {
         else {
             // Peste 15 cm: buzzer oprit
             LCD_SetCursor(0, 1);
-            LCD_SendString("");
+            LCD_SendString("Liber");
             Buzzer_Off();
             _delay_ms(200);
         }
