@@ -31,17 +31,38 @@ int main(void) {
         LCD_SetCursor(0, 0);
         LCD_SendString(buffer);
 
-        // Daca distanta este mai mica sau egala cu 15 cm, pornim buzzerul
-        if (distanta > 0 && distanta <= 15) {
+        // Verificam in ce interval se afla distanta pentru a regla buzzerul
+        if (distanta > 0 && distanta <= 5) {
+            // De la 5 cm in jos: sunet continuu
+            LCD_SetCursor(0, 1);
+            LCD_SendString("");
             Buzzer_On();
+            _delay_ms(200); // 200ms pauza inainte de urmatoarea citire
+        } 
+        else if (distanta > 5 && distanta <= 10) {
+            // Intre 5 cm si 10 cm: bip rapid
             LCD_SetCursor(0, 1);
-            LCD_SendString("Avertizare!    ");
-        } else {
+            LCD_SendString("");
+            Buzzer_On();
+            _delay_ms(100);
             Buzzer_Off();
+            _delay_ms(100); // Total 200ms
+        } 
+        else if (distanta > 10 && distanta <= 15) {
+            // Intre 10 cm si 15 cm: bip rar
             LCD_SetCursor(0, 1);
-            LCD_SendString("Liber          ");
+            LCD_SendString("");
+            Buzzer_On();
+            _delay_ms(50);
+            Buzzer_Off();
+            _delay_ms(350); // Bip scurt, pauza mai lunga (total 400ms)
+        } 
+        else {
+            // Peste 15 cm: buzzer oprit
+            LCD_SetCursor(0, 1);
+            LCD_SendString("");
+            Buzzer_Off();
+            _delay_ms(200);
         }
-
-        _delay_ms(200); // Pauza scurta inainte de urmatoarea citire
     }
 }
