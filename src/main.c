@@ -8,11 +8,25 @@
 #include "drivers/ultrasonic/ultrasonic.h"
 #include "drivers/i2c/i2c.h"
 
+// Definim pinii pentru cele 2 LED-uri. Modificati D3 si D4 daca le-ati conectat la alti pini.
+#define LED1_PIN D3
+#define LED2_PIN D4
+
+void set_leds(gpio_state_t state) {
+    GPIO_Write(LED1_PIN, state);
+    GPIO_Write(LED2_PIN, state);
+}
+
 int main(void) {
     // 1. Inițializarea modulelor
     Buzzer_Init();
     Ultrasonic_Init();
     LCD_Init();
+
+    // Inițializare pini LED și aprindere continuă
+    GPIO_Init(LED1_PIN, GPIO_OUTPUT);
+    GPIO_Init(LED2_PIN, GPIO_OUTPUT);
+    set_leds(GPIO_HIGH);
 
     LCD_SetCursor(0, 0);
     LCD_SendString("Salutare!");
@@ -35,7 +49,7 @@ int main(void) {
         if (distanta > 0 && distanta <= 5) {
             // De la 5 cm in jos: sunet continuu
             LCD_SetCursor(0, 1);
-            LCD_SendString("STOP!!!!");
+            LCD_SendString("STOP!!!!   ");
             Buzzer_On();
             _delay_ms(200); // 200ms pauza inainte de urmatoarea citire
         } 
@@ -51,7 +65,7 @@ int main(void) {
         else if (distanta > 10 && distanta <= 15) {
             // Intre 10 cm si 15 cm: bip rar
             LCD_SetCursor(0, 1);
-            LCD_SendString("ATENTIE!");
+            LCD_SendString("ATENTIE!  ");
             Buzzer_On();
             _delay_ms(50);
             Buzzer_Off();
@@ -60,7 +74,7 @@ int main(void) {
         else {
             // Peste 15 cm: buzzer oprit
             LCD_SetCursor(0, 1);
-            LCD_SendString("Liber");
+            LCD_SendString("Liber     ");
             Buzzer_Off();
             _delay_ms(200);
         }
