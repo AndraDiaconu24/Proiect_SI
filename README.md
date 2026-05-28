@@ -1,132 +1,74 @@
-# Embedded Systems Course and Labs for students from Automation and Applied Informatics from Faculty of Automation, Computers and Electronics, University of Craiova
+# Sistem de Avertizare a Distanței cu ATmega328p
 
-This repository is dedicated to the Embedded Systems course and labs for students from Automation and Applied Informatics from Faculty of Automation, Computers and Electronics, University of Craiova. 
+Acesta este un proiect de tip "senzor de parcare" bazat pe un microcontroler ATmega328p (Arduino Nano). Sistemul folosește un senzor ultrasonic pentru a măsura distanța până la cel mai apropiat obiect și oferă feedback vizual și auditiv utilizatorului în funcție de proximitatea acestuia.
 
-If you are a student: please fork this repository and use it for your labs, homework and course. 
+Proiectul este dezvoltat **fără a folosi bibliotecile standard Arduino (fără framework-ul Arduino)**, interacționând direct cu registrele microcontrolerului printr-un strat de abstractizare hardware (HAL) propriu. Acest lucru oferă control maxim și eficiență.
 
-Found a bug or you just want to contribute to this project ? Please raise an issue and/or send a pull request.
+## Funcționalitate
 
-[![Run Tests](https://github.com/mamuleanu/embedded-systems-course-atmega328p/actions/workflows/tests.yml/badge.svg)](https://github.com/mamuleanu/embedded-systems-course-atmega328p/actions/workflows/tests.yml)
+Sistemul măsoară constant distanța și reacționează astfel:
+- **Peste 15 cm:** Zona este liberă. LED-ul verde este aprins, buzzerul este oprit, iar pe LCD este afișat mesajul `"Liber"`.
+- **Între 10 cm și 15 cm:** Zonă de atenție. LED-ul roșu se aprinde și buzzerul emite un sunet cu o frecvență rară (bip rar). Pe LCD este afișat `"ATENTIE!"`.
+- **Între 5 cm și 10 cm:** Zonă de pericol. LED-ul roșu se aprinde și buzzerul emite un sunet cu o frecvență rapidă (bip rapid). Pe LCD este afișat `"PERICOL!!!"`.
+- **Sub 5 cm:** Oprire iminentă. LED-ul roșu este aprins, buzzerul emite un sunet continuu, iar pe LCD este afișat `"STOP!!!!"`.
 
+Distanța exactă măsurată de senzor este afișată în permanență pe prima linie a ecranului LCD (ex: `Dist: 12 cm`).
 
-## Features
+## Componente Hardware
 
-- **No Arduino Libraries**: Direct register manipulation for maximum control and efficiency.
-- **Drivers:**: Modular, documented, and reusable.
-    - **GPIO**: Initialization, Write, Read, Toggle.
-    - **Interrupts**: External Interrupts (INT0, INT1) with callback support.
-    - **Timer**: 1ms System Tick (`Millis()`) using Timer0 CTC mode.
-    - **EEPROM**: Read, Write, Update (lifespan-aware).
-    - **ADC**: Blocking 10-bit Analog-to-Digital conversion.
-    - **PWM**: High-level wrapper for Timer1 (16-bit) and Timer2 (8-bit) PWM generation.
-- **Board Support Package (BSP)**: Pin mappings for **Arduino Nano** and **Uno**.
-- **Robust Build System**: `Makefile` for compilation, flashing, and testing.
-- **Host-Based Unit Testing**: Run unit tests on your computer without hardware using register mocking.
-- **Code Coverage**: Generate HTML reports (`lcov`) to verify test coverage.
+Pentru a replica acest proiect, aveți nevoie de următoarele componente:
+- **1x** Placă de dezvoltare Arduino Nano (ATmega328p)
+- **1x** Senzor Ultrasonic (ex: HC-SR04)
+- **1x** Ecran LCD compatibil I2C (ex: 16x2)
+- **1x** Buzzer activ/pasiv
+- **1x** LED Roșu
+- **1x** LED Verde
+- **2x** Rezistențe (220Ω - 330Ω) pentru LED-uri
+- Fire de conexiune (Jumper wires) și un Breadboard
 
-## Roadmap
+### Conexiuni implicite pini
+*Configurația pinilor poate fi modificată din fișierul `src/main.c` sau drivere.*
+- **LED Roșu:** Pin D3
+- **LED Verde:** Pin D4
+- **Buzzer, Senzor Ultrasonic, LCD:** Conform fișierelor de configurare din `drivers/`
 
-- [x] GPIO driver
-- [x] ADC driver
-- [x] EEPROM driver
-- [x] Interrupt driver
-- [x] Timer driver
-- [x] PWM driver
-- [ ] I2C driver
-- [ ] SPI driver
-- [ ] UART driver
-- [ ] Unit tests
+## Structura Proiectului
 
-## Project Structure
+Proiectul este organizat modular, separând logica aplicației de driverele hardware:
 
-```
-├── bsp/            # Board definitions (uno.h, nano.h)
-├── drivers/        # Hardware Abstraction Layer
-│   ├── adc/
-│   ├── eeprom/
-│   ├── gpio/
-│   ├── interrupt/
-│   └── timer/
-├── src/            # Application source code (main.c)
-├── test/           # Unit tests & Mocks
-│   ├── mocks/      # Mock AVR registers for host testing
-│   ├── framework/  # Minimal test runner
-│   └── test_*.c    # Unit test files
-├── utils/          # Helper macros (BIT manipulations)
-└── Makefile        # Build configuration
+```text
+├── bsp/            # Definiții specifice plăcii (nano.h)
+├── drivers/        # Strat de Abstractizare Hardware (HAL)
+│   ├── buzzer/     # Controlul buzzer-ului
+│   ├── gpio/       # Inițializare și control pini I/O
+│   ├── i2c/        # Comunicație I2C (pentru LCD)
+│   ├── lcd/        # Control afișaj LCD
+│   ├── pwm/        # Generare semnal PWM
+│   └── ultrasonic/ # Citire senzor ultrasonic
+├── src/            # Codul sursă al aplicației principale
+│   └── main.c      # Logica de funcționare a senzorului de distanță
+├── utils/          # Funcții utilitare (ex: delay.h)
+└── Makefile        # Configurația pentru compilare și încărcare
 ```
 
-## Build & Flash
+## Compilare și Încărcare (Build & Flash)
 
-### Prerequisites
-- `avr-gcc` toolchain
-- `avrdude`
+Proiectul folosește un `Makefile` robust pentru automatizarea procesului de build.
+
+### Cerințe preliminare
+- Toolchain-ul `avr-gcc`
+- Utilitarul `avrdude` pentru scrierea codului pe placă
 - `make`
 
-### Commands
-| Command | Description |
+### Comenzi disponibile
+
+| Comandă | Descriere |
 |---------|-------------|
-| `make all BOARD=nano` | Compile the project for Arduino Nano. |
-| `make flash` | Flash the firmware to the connected board. |
-| `make clean` | Remove build artifacts. |
+| `make all BOARD=nano` | Compilează întregul proiect pentru Arduino Nano. |
+| `make flash` | Încarcă (flashing) firmware-ul rezultat pe placa conectată. |
+| `make clean` | Șterge fișierele generate în urma compilării (`.o`, `.elf`, `.hex`). |
 
-## Testing & Coverage
-
-This project supports running unit tests on your host machine (Mac/Linux) by mocking the AVR hardware registers.
-
-### Prerequisites (for coverage)
-- `gcc`
-- `lcov` (`brew install lcov`)
-
-### Commands
-| Command | Description |
-|---------|-------------|
-| `make test` | Compile and run all unit tests (GPIO, PWM) on the host. |
-| `make coverage` | Run tests and generate usage metrics. |
-| `make coverage-html` | Generate a visual HTML report of code coverage. |
-
-![Code Coverage Example](/img/code_coverage_example.png)
-
-## Usage Example
-
-```c
-#include "drivers/gpio/gpio.h"
-#include "drivers/timer/timer0.h"
-#include "bsp/nano.h"
-
-int main(void) {
-    
-    Timer0_Init();
-    GPIO_Init(LED_BUILTIN, GPIO_OUTPUT);
-
-    uint32_t last_time = 0;
-
-    while (1) {
-            
-        if (Millis() - last_time >= 1000) {
-            last_time = Millis();
-            GPIO_Toggle(LED_BUILTIN);
-        }
-    }
-}
-
-// PWM Usage Example
-#include "drivers/pwm/pwm.h"
-#include "bsp/uno.h"
-
-int pwm_example(void) {
-    // 50Hz for Servo on D9
-    PWM_Init(UNO_D9, 50);
-    // 1.5ms pulse (approx neutral)
-    // Duty cycle calculation: (1.5ms / 20ms) * ICR1_TOP
-    // Wrapper takes 0-255: (1.5/20)*255 = ~19
-    PWM_SetDutyCycle(UNO_D9, 19);
-
-    // 1kHz LED Dimming on D11
-    PWM_Init(UNO_D11, 1000);
-    PWM_SetDutyCycle(UNO_D11, 128); // 50%
-    
-    return 0;
-}
-```
+## Contribuitori
+Diaconu Andra-Gabriela
+Tecuța Elena-Simona
 
