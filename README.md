@@ -69,6 +69,6 @@ Proiectul folosește un `Makefile` robust pentru automatizarea procesului de bui
 | `make clean` | Șterge fișierele generate în urma compilării (`.o`, `.elf`, `.hex`). |
 
 ## Contribuitori
-Diaconu Andra-Gabriela
-Tecuța Elena-Simona
+-Diaconu Andra-Gabriela;
+-Tecuța Elena-Simona
 
