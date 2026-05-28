@@ -1,74 +1,73 @@
-# Sistem de Avertizare a Distanței cu ATmega328p
+# Distance Warning System with ATmega328p
 
-Acesta este un proiect de tip "senzor de parcare" bazat pe un microcontroler ATmega328p (Arduino Nano). Sistemul folosește un senzor ultrasonic pentru a măsura distanța până la cel mai apropiat obiect și oferă feedback vizual și auditiv utilizatorului în funcție de proximitatea acestuia.
+This is a "parking sensor" style project based on an ATmega328p microcontroller (Arduino Nano). The system uses an ultrasonic sensor to measure the distance to the nearest object and provides visual and auditory feedback to the user depending on their proximity.
 
-Proiectul este dezvoltat **fără a folosi bibliotecile standard Arduino (fără framework-ul Arduino)**, interacționând direct cu registrele microcontrolerului printr-un strat de abstractizare hardware (HAL) propriu. Acest lucru oferă control maxim și eficiență.
+The project is developed **without using the standard Arduino libraries (no Arduino framework)**, interacting directly with the microcontroller registers through a custom hardware abstraction layer (HAL). This approach offers maximum control and efficiency.
 
-## Funcționalitate
+## Functionality
 
-Sistemul măsoară constant distanța și reacționează astfel:
-- **Peste 15 cm:** Zona este liberă. LED-ul verde este aprins, buzzerul este oprit, iar pe LCD este afișat mesajul `"Liber"`.
-- **Între 10 cm și 15 cm:** Zonă de atenție. LED-ul roșu se aprinde și buzzerul emite un sunet cu o frecvență rară (bip rar). Pe LCD este afișat `"ATENTIE!"`.
-- **Între 5 cm și 10 cm:** Zonă de pericol. LED-ul roșu se aprinde și buzzerul emite un sunet cu o frecvență rapidă (bip rapid). Pe LCD este afișat `"PERICOL!!!"`.
-- **Sub 5 cm:** Oprire iminentă. LED-ul roșu este aprins, buzzerul emite un sunet continuu, iar pe LCD este afișat `"STOP!!!!"`.
+The system constantly measures the distance and reacts as follows:
+- **Over 15 cm:** The area is clear. The green LED is on, the buzzer is off, and the LCD displays the message `"Liber"` (Clear).
+- **Between 10 cm and 15 cm:** Warning zone. The red LED turns on and the buzzer emits a low-frequency sound (slow beep). The LCD displays `"ATENTIE!"` (Warning).
+- **Between 5 cm and 10 cm:** Danger zone. The red LED turns on and the buzzer emits a high-frequency sound (fast beep). The LCD displays `"PERICOL!!!"` (Danger).
+- **Under 5 cm:** Imminent stop. The red LED is on, the buzzer emits a continuous sound, and the LCD displays `"STOP!!!!"`.
 
-Distanța exactă măsurată de senzor este afișată în permanență pe prima linie a ecranului LCD (ex: `Dist: 12 cm`).
+The exact distance measured by the sensor is constantly displayed on the first line of the LCD screen (e.g., `Dist: 12 cm`).
 
-## Componente Hardware
+## Hardware Components
 
-Pentru a replica acest proiect, aveți nevoie de următoarele componente:
-- **1x** Placă de dezvoltare Arduino Nano (ATmega328p)
-- **1x** Senzor Ultrasonic (ex: HC-SR04)
-- **1x** Ecran LCD compatibil I2C (ex: 16x2)
-- **1x** Buzzer activ/pasiv
-- **1x** LED Roșu
-- **1x** LED Verde
-- **2x** Rezistențe (220Ω - 330Ω) pentru LED-uri
-- Fire de conexiune (Jumper wires) și un Breadboard
+To replicate this project, you need the following components:
+- **1x** Arduino Nano development board (ATmega328p)
+- **1x** Ultrasonic Sensor (e.g., HC-SR04)
+- **1x** I2C compatible LCD screen (e.g., 16x2)
+- **1x** Active/Passive Buzzer
+- **1x** Red LED
+- **1x** Green LED
+- **2x** Resistors (220Ω - 330Ω) for the LEDs
+- Jumper wires and a Breadboard
 
-### Conexiuni implicite pini
-*Configurația pinilor poate fi modificată din fișierul `src/main.c` sau drivere.*
-- **LED Roșu:** Pin D3
-- **LED Verde:** Pin D4
-- **Buzzer, Senzor Ultrasonic, LCD:** Conform fișierelor de configurare din `drivers/`
+### Default Pin Connections
+*The pin configuration can be modified in the `src/main.c` file or drivers.*
+- **Red LED:** Pin D3
+- **Green LED:** Pin D4
+- **Buzzer, Ultrasonic Sensor, LCD:** According to the configuration files in `drivers/`
 
-## Structura Proiectului
+## Project Structure
 
-Proiectul este organizat modular, separând logica aplicației de driverele hardware:
+The project is modularly organized, separating the application logic from the hardware drivers:
 
 ```text
-├── bsp/            # Definiții specifice plăcii (nano.h)
-├── drivers/        # Strat de Abstractizare Hardware (HAL)
-│   ├── buzzer/     # Controlul buzzer-ului
-│   ├── gpio/       # Inițializare și control pini I/O
-│   ├── i2c/        # Comunicație I2C (pentru LCD)
-│   ├── lcd/        # Control afișaj LCD
-│   ├── pwm/        # Generare semnal PWM
-│   └── ultrasonic/ # Citire senzor ultrasonic
-├── src/            # Codul sursă al aplicației principale
-│   └── main.c      # Logica de funcționare a senzorului de distanță
-├── utils/          # Funcții utilitare (ex: delay.h)
-└── Makefile        # Configurația pentru compilare și încărcare
+├── bsp/            # Board specific definitions (nano.h)
+├── drivers/        # Hardware Abstraction Layer (HAL)
+│   ├── buzzer/     # Buzzer control
+│   ├── gpio/       # I/O pins initialization and control
+│   ├── i2c/        # I2C communication (for LCD)
+│   ├── lcd/        # LCD display control
+│   ├── pwm/        # PWM signal generation
+│   └── ultrasonic/ # Ultrasonic sensor reading
+├── src/            # Main application source code
+│   └── main.c      # Distance sensor operating logic
+├── utils/          # Utility functions (e.g., delay.h)
+└── Makefile        # Build and flash configuration
 ```
 
-## Compilare și Încărcare (Build & Flash)
+## Build & Flash
 
-Proiectul folosește un `Makefile` robust pentru automatizarea procesului de build.
+The project uses a robust `Makefile` to automate the build process.
 
-### Cerințe preliminare
-- Toolchain-ul `avr-gcc`
-- Utilitarul `avrdude` pentru scrierea codului pe placă
+### Prerequisites
+- `avr-gcc` toolchain
+- `avrdude` utility for flashing the code to the board
 - `make`
 
-### Comenzi disponibile
+### Available Commands
 
-| Comandă | Descriere |
+| Command | Description |
 |---------|-------------|
-| `make all BOARD=nano` | Compilează întregul proiect pentru Arduino Nano. |
-| `make flash` | Încarcă (flashing) firmware-ul rezultat pe placa conectată. |
-| `make clean` | Șterge fișierele generate în urma compilării (`.o`, `.elf`, `.hex`). |
+| `make all BOARD=nano` | Compiles the entire project for Arduino Nano. |
+| `make flash` | Flashes the resulting firmware to the connected board. |
+| `make clean` | Deletes the generated build files (`.o`, `.elf`, `.hex`). |
 
-## Contribuitori
--Diaconu Andra-Gabriela;
--Tecuța Elena-Simona
-
+## Contributors
+- Diaconu Andra-Gabriela
+- Tecuța Elena-Simona
